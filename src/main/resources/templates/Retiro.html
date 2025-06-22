@@ -146,8 +146,10 @@
             <div class="cajero">
                 <div class="c-head">
                     <div class="c-head__btn--izq">
+                        <button class="btn btn--opc" ></button>
                         <button class="btn btn--opc" onclick="consultarSaldo()">Consultar saldo</button>
                         <button class="btn btn--opc" onclick="retirarDinero()">Retirar</button>
+                        <button class="btn btn--opc" ></button>
                     </div>
                     <div class="c-head__pantalla">
                         <div class="pantalla" id="pantalla">
@@ -157,7 +159,10 @@
                         </div>
                     </div>
                     <div class="c-head__btn--der">
+                        <button class="btn btn--opc" ></button>
                         <button class="btn btn--opc" onclick="limpiarPantalla()">Limpiar</button>
+                        <button class="btn btn--opc" onclick="limpiarPantalla()">Administrar</button>
+                        <button class="btn btn--opc" ></button>
                     </div>
                 </div>
 
@@ -191,23 +196,23 @@
 
         <script>
             function consultarSaldo() {
-    fetch("http://localhost:8081/Efectivoapi/saldo")
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("No se pudo obtener el saldo");
-        }
-        return response.text();
-    })
-    .then(saldo => {
-        document.getElementById("saldo-texto").textContent = `Saldo disponible: $${parseFloat(saldo).toFixed(2)}`;
-        document.getElementById("mensaje").textContent = "Consulta realizada.";
-    })
-    .catch(error => {
-        document.getElementById("saldo-texto").textContent = "Error al consultar el saldo.";
-        document.getElementById("mensaje").textContent = error.message;
-        console.error("Error:", error);
-    });
-}
+                fetch("http://localhost:8081/Efectivoapi/saldo")
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("No se pudo obtener el saldo");
+                            }
+                            return response.text();
+                        })
+                        .then(saldo => {
+                            document.getElementById("saldo-texto").textContent = `Saldo disponible: $${parseFloat(saldo).toFixed(2)}`;
+                            document.getElementById("mensaje").textContent = "Consulta realizada.";
+                        })
+                        .catch(error => {
+                            document.getElementById("saldo-texto").textContent = "Error al consultar el saldo.";
+                            document.getElementById("mensaje").textContent = error.message;
+                            console.error("Error:", error);
+                        });
+            }
 
 
             function retirarDinero() {
