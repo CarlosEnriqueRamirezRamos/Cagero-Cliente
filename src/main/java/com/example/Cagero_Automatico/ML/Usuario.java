@@ -5,21 +5,21 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class Usuario {
 
-    private int IdUsuario;
-    private String Username;
-    private String Nombre;
-    private String ApellidoPaterno;
-    private String ApellidoMaterno;
-    private String Telefono;
+    public int IdUsuario;
+    public String Username;
+    public String Nombre;
+    public String ApellidoPaterno;
+    public String ApellidoMaterno;
+    public String Telefono;
     public Rol Rol;
-    private String Email;
-    private String Password;
-    private Date FechaNacimiento;
+    public String Email;
+    public String Password;
+    public Date FechaNacimiento;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private String Sexo;
-    private String Celular;
-    private String Curp;
-    private int Status;
+    public String Sexo;
+    public String Celular;
+    public String Curp;
+    public int Status;
     
     public Usuario(){
         

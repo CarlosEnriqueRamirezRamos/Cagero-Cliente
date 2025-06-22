@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+    <head>
+        <title>Panel de Efectivo</title>
+        <style>
+            body {
+                background-color: #f4f6f9;
+            }
+
+            .header-container {
+                background-color: #003366;
+                color: white;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+
+            .card-table {
+                border: none;
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 0 10px rgba(0,0,0,0.05);
+                padding: 1.5rem;
+            }
+
+            .table th {
+                background-color: #e6f0ff;
+                color: #003366;
+                font-weight: 600;
+            }
+
+            .no-efectivo {
+                padding: 1rem;
+                text-align: center;
+                color: #777;
+            }
+        </style>
+    </head>
+
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="header-container d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0">Gestión de Efectivo</h1>
+            </div>
+
+            <div class="card-table">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Denominación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="efectivo : ${listaefectivos}">
+                                <td th:text="${efectivo.tipo}">Tipo</td>
+                                <td th:text="${efectivo.cantidad}">Cantidad</td>
+                                <td th:text="${efectivo.denominacion}">Denominación</td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(listaefectivos)}">
+                                <td colspan="3" class="no-efectivo">
+                                    No hay registros de efectivo disponibles.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</html>

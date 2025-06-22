@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Retiro2SP0 - Cajero Interactivo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                margin: 0;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: Helvetica, sans-serif;
+                background: linear-gradient(to bottom right, #1a1a1a, #2e2e2e);
+            }
+
+            .cajero {
+                width: 800px;
+                display: grid;
+                grid-template-rows: auto auto;
+                gap: 10px;
+            }
+
+            .c-head, .c-body {
+                border-radius: 20px;
+                padding: 15px;
+                display: grid;
+                gap: 15px;
+            }
+
+            .c-head {
+                background: linear-gradient(180deg, #e7e7e7 0%, #9b9b9b 100%);
+                grid-template-columns: 100px 1fr 100px;
+                grid-template-areas: "btn-izq pantalla btn-der";
+            }
+
+            .c-head__btn--izq, .c-head__btn--der {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .c-head__btn--izq {
+                grid-area: btn-izq;
+            }
+            .c-head__pantalla {
+                grid-area: pantalla;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .c-head__btn--der {
+                grid-area: btn-der;
+            }
+
+            .pantalla {
+                height: 300px;
+                width: 530px;
+                padding: 15px;
+                border-radius: 20px;
+                color: #FBFCFC;
+                background: linear-gradient(180deg, rgba(113,161,255,1) 0%, rgba(51,107,255,1) 100%);
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: start;
+                align-items: flex-start;
+            }
+
+            .pantalla img {
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .pantalla #mensaje {
+                font-size: 20px;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+
+            .c-body {
+                background: linear-gradient(180deg, #9b9b9b 0%, #7c7c7c 100%);
+                grid-template-columns: 3fr 2fr;
+            }
+
+            .c-body__btn {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .c-body__btn--num {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .c-body__btn--act {
+                margin-left: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                cursor: pointer;
+                border: none;
+                border-radius: 7px;
+                box-shadow: 0 2px 3px rgba(0,0,0,0.75);
+            }
+
+            .btn--opc {
+                width: 80px;
+                height: 40px;
+                background-color: #515A5A;
+                color: white;
+            }
+
+            .btn--num, .btn--act {
+                width: 80px;
+                height: 65px;
+                font-size: 18px;
+                background: white;
+            }
+
+            .btn--danger {
+                background-color: #EF5350;
+                color: white;
+            }
+            .btn--success {
+                background-color: #66BB6A;
+                color: white;
+            }
+            .btn--warning {
+                background-color: #FFEE58;
+                color: black;
+            }
+
+        </style>
+    </head>
+    <body>
+        <section>
+            <div class="cajero">
+                <div class="c-head">
+                    <div class="c-head__btn--izq">
+                        <button class="btn btn--opc" onclick="consultarSaldo()">Consultar saldo</button>
+                        <button class="btn btn--opc" onclick="retirarDinero()">Retirar</button>
+                    </div>
+                    <div class="c-head__pantalla">
+                        <div class="pantalla" id="pantalla">
+                            <img src="/images/logo-multirrobo.png" alt="Logo Multirrobo">
+                            <div id="mensaje">Bienvenido</div>
+                            <div id="saldo-texto" style="margin-top: 80px; font-size: 22px; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="c-head__btn--der">
+                        <button class="btn btn--opc" onclick="limpiarPantalla()">Limpiar</button>
+                    </div>
+                </div>
+
+                <div class="c-body">
+                    <div class="c-body__btn">
+                        <div class="c-body__btn--num">
+                            <button class="btn btn--num">1</button>
+                            <button class="btn btn--num">2</button>
+                            <button class="btn btn--num">3</button>
+                            <button class="btn btn--num">4</button>
+                            <button class="btn btn--num">5</button>
+                            <button class="btn btn--num">6</button>
+                            <button class="btn btn--num">7</button>
+                            <button class="btn btn--num">8</button>
+                            <button class="btn btn--num">9</button>
+                            <button class="btn btn--num">-</button>
+                            <button class="btn btn--num">0</button>
+                            <button class="btn btn--num">-</button>
+                        </div>
+                        <div class="c-body__btn--act">
+                            <button class="btn btn--act btn--danger" onclick="cancelarOperacion()">Cancelar</button>
+                            <button class="btn btn--act btn--success" onclick="consultarSaldo()">Aceptar</button>
+                            <button class="btn btn--act btn--warning" onclick="limpiarPantalla()">Borrar</button>
+                        </div>
+                    </div>
+                    <!-- Área derecha del cuerpo (podrías agregar tarjeta o billetes aquí si lo deseas) -->
+                    <div></div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function consultarSaldo() {
+    fetch("http://localhost:8081/Efectivoapi/saldo")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("No se pudo obtener el saldo");
+        }
+        return response.text();
+    })
+    .then(saldo => {
+        document.getElementById("saldo-texto").textContent = `Saldo disponible: $${parseFloat(saldo).toFixed(2)}`;
+        document.getElementById("mensaje").textContent = "Consulta realizada.";
+    })
+    .catch(error => {
+        document.getElementById("saldo-texto").textContent = "Error al consultar el saldo.";
+        document.getElementById("mensaje").textContent = error.message;
+        console.error("Error:", error);
+    });
+}
+
+
+            function retirarDinero() {
+                const monto = prompt("Ingrese el monto a retirar:");
+                const mensaje = document.getElementById("mensaje");
+
+                if (monto === null || monto.trim() === "") {
+                    mensaje.textContent = "Operación cancelada.";
+                    return;
+                }
+
+                const cantidad = parseFloat(monto);
+
+                if (isNaN(cantidad) || cantidad <= 0) {
+                    mensaje.textContent = "Monto inválido.";
+                } else {
+                    consultarSaldo(); // Para refrescar el saldo antes de comparar
+                    setTimeout(() => {
+                        const saldoTexto = document.getElementById("saldo-texto").textContent;
+                        const match = saldoTexto.match(/[\d.]+/);
+                        const saldoActual = match ? parseFloat(match[0]) : 0;
+
+                        if (cantidad > saldoActual) {
+                            mensaje.textContent = "Saldo insuficiente.";
+                        } else {
+                            const nuevoSaldo = saldoActual - cantidad;
+                            document.getElementById("saldo-texto").textContent = `Saldo disponible: $${nuevoSaldo.toFixed(2)}`;
+                            mensaje.textContent = "Retiro exitoso.";
+                        }
+                    }, 500); // espera un poco para que el saldo se actualice primero
+                }
+            }
+
+            function limpiarPantalla() {
+                document.getElementById("mensaje").textContent = "";
+                document.getElementById("saldo-texto").textContent = "";
+            }
+
+            function cancelarOperacion() {
+                document.getElementById("mensaje").textContent = "Operación cancelada.";
+            }
+        </script>
+    </body>
+</html>
