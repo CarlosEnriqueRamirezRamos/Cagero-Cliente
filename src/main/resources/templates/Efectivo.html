@@ -97,9 +97,7 @@
             <div class="container mt-4">
                 <div class="header-container d-flex justify-content-between align-items-center">
                     <h1 class="page-title mb-0">Gestión de Efectivo</h1>
-                    <form th:action="@{/Cagero/rellenar}" method="get">
-                        <button type="submit" class="btn-rellenar">Reestablecer efectivo</button>
-                    </form>
+                    
                 </div>
 
                 <!-- Mensajes de éxito/error -->
@@ -130,6 +128,9 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <form th:action="@{/Cagero/rellenar}" method="get">
+                        <button type="submit" class="btn-rellenar">Reestablecer efectivo</button>
+                    </form>
                     </div>
                 </div>
             </div>
