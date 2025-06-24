@@ -30,7 +30,6 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
-            
         <!-- Thymeleaf Extras (solo si realmente los necesitas) -->
         <dependency>
             <groupId>nz.net.ultraq.thymeleaf</groupId>

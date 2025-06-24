@@ -22,12 +22,14 @@ import java.util.List;
 public class UsuarioController {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final String URL = "http://localhost:8081/Efectivoapi";
 
     @GetMapping
     public String Cagero(Model model) {
-    return "Retiro";  // El nombre debe coincidir con tu archivo Thymeleaf (Cagero.html)
-}
-@GetMapping("/Usuarios")
+        return "Retiro";  // El nombre debe coincidir con tu archivo Thymeleaf (Cagero.html)
+    }
+
+    @GetMapping("/Usuarios")
     public String index(Model model) {
         String url = "http://localhost:8081/Usuario";
 
@@ -76,4 +78,9 @@ public class UsuarioController {
         return "Efectivo";
     }
 
+    @GetMapping("/rellenar")
+    public String reestablecerEfectivo() {
+        restTemplate.getForObject("http://localhost:8081/Efectivoapi/rellenar", Void.class);
+        return "redirect:/Cagero/Efectivo"; // Redirige a la vista
+    }
 }

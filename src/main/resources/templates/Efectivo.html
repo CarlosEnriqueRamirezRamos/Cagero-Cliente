@@ -8,11 +8,15 @@
         <title>Panel de Efectivo</title>
         <style>
             body {
-                background-color: #f4f6f9;
+                background-color: #121212;
+                color: #eee;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
             }
 
             .header-container {
-                background-color: #003366;
+                background-color: #1f2937;
                 color: white;
                 padding: 1.5rem;
                 border-radius: 0.5rem;
@@ -26,16 +30,52 @@
 
             .card-table {
                 border: none;
-                background: white;
+                background: #1e293b;
                 border-radius: 1rem;
-                box-shadow: 0 0 10px rgba(0,0,0,0.05);
+                box-shadow: 0 0 10px rgba(0,0,0,0.5);
                 padding: 1.5rem;
+                color: #e0e7ff;
+            }
+
+            .table {
+                color: #e0e7ff;
             }
 
             .table th {
-                background-color: #e6f0ff;
-                color: #003366;
+                background-color: #334155;
+                color: #bfdbfe;
                 font-weight: 600;
+                border-bottom: 1px solid #475569;
+                text-align: left;
+                padding: 0.75rem 1rem;
+            }
+
+            .table td {
+                color: #0f0f0f; 
+                border-top: 1px solid #475569;
+                padding: 0.75rem 1rem;
+                vertical-align: middle;
+            }
+
+            .table-hover tbody tr:hover {
+                background-color: #334155;
+                color: #f1f5f9;
+            }
+
+            .btn-rellenar {
+                background-color: #28a745;
+                color: white;
+                border: none;
+                padding: 0.5rem 1.5rem;
+                border-radius: 0.25rem;
+                font-weight: 500;
+                transition: all 0.3s;
+                cursor: pointer;
+            }
+
+            .btn-rellenar:hover {
+                background-color: #218838;
+                transform: translateY(-1px);
             }
 
             .no-efectivo {
@@ -43,42 +83,56 @@
                 text-align: center;
                 color: #777;
             }
+
+            .alert-message {
+                margin-top: 1rem;
+                padding: 1rem;
+                border-radius: 0.25rem;
+            }
         </style>
     </head>
 
-    <div layout:fragment="content">
-        <div class="container mt-4">
-            <div class="header-container d-flex justify-content-between align-items-center">
-                <h1 class="page-title mb-0">Gestión de Efectivo</h1>
-            </div>
+    <body>
+        <div layout:fragment="content">
+            <div class="container mt-4">
+                <div class="header-container d-flex justify-content-between align-items-center">
+                    <h1 class="page-title mb-0">Gestión de Efectivo</h1>
+                    <form th:action="@{/Cagero/rellenar}" method="get">
+                        <button type="submit" class="btn-rellenar">Reestablecer efectivo</button>
+                    </form>
+                </div>
 
-            <div class="card-table">
-                <div class="table-responsive">
-                    <table class="table align-middle table-hover">
-                        <thead>
-                            <tr>
-                                <th>Tipo</th>
-                                <th>Cantidad</th>
-                                <th>Denominación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="efectivo : ${listaefectivos}">
-                                <td th:text="${efectivo.tipo}">Tipo</td>
-                                <td th:text="${efectivo.cantidad}">Cantidad</td>
-                                <td th:text="${efectivo.denominacion}">Denominación</td>
-                            </tr>
+                <!-- Mensajes de éxito/error -->
+                <div th:if="${success}" class="alert alert-success alert-message" th:text="${success}"></div>
+                <div th:if="${error}" class="alert alert-danger alert-message" th:text="${error}"></div>
 
-                            <tr th:if="${#lists.isEmpty(listaefectivos)}">
-                                <td colspan="3" class="no-efectivo">
-                                    No hay registros de efectivo disponibles.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card-table">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Denominación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="efectivo : ${listaefectivos}">
+                                    <td th:text="${efectivo.tipo}">Tipo</td>
+                                    <td th:text="${efectivo.cantidad}">Cantidad</td>
+                                    <td th:text="'$' + ${#numbers.formatDecimal(efectivo.denominacion, 1, 2)}">Denominación</td>
+                                </tr>
+
+                                <tr th:if="${#lists.isEmpty(listaefectivos)}">
+                                    <td colspan="3" class="no-efectivo">
+                                        No hay registros de efectivo disponibles.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    </body>
 </html>

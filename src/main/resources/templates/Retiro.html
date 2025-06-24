@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Retiro2SP0 - Cajero Interactivo</title>
+        <title>Multirrobo</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
@@ -149,23 +149,23 @@
                         <button class="btn btn--opc" ></button>
                         <button class="btn btn--opc" onclick="consultarSaldo()">Consultar saldo</button>
                         <button class="btn btn--opc" onclick="retirarDinero()">Retirar</button>
-                        <button class="btn btn--opc" ></button>
                     </div>
                     <div class="c-head__pantalla">
                         <div class="pantalla" id="pantalla">
                             <img src="/images/logo-multirrobo.png" alt="Logo Multirrobo">
                             <div id="mensaje">Bienvenido</div>
+                            <input type="number" id="monto-retiro" placeholder="Ingrese el monto" style="margin-top: 20px; padding: 10px; width: 80%; border-radius: 5px; border: none; display: none;">
                             <div id="saldo-texto" style="margin-top: 80px; font-size: 22px; font-weight: bold;"></div>
                         </div>
                     </div>
                     <div class="c-head__btn--der">
                         <button class="btn btn--opc" ></button>
                         <button class="btn btn--opc" onclick="limpiarPantalla()">Limpiar</button>
-                        <button class="btn btn--opc" onclick="limpiarPantalla()">Administrar</button>
-                        <button class="btn btn--opc" ></button>
+                        <a class="navbar-brand fw-semibold" th:href="@{/Cagero/Usuarios}">
+                            <button class="btn btn--opc" onclick="limpiarPantalla()">Administrar</button>
+                        </a>
                     </div>
                 </div>
-
                 <div class="c-body">
                     <div class="c-body__btn">
                         <div class="c-body__btn--num">
@@ -180,21 +180,21 @@
                             <button class="btn btn--num">9</button>
                             <button class="btn btn--num">-</button>
                             <button class="btn btn--num">0</button>
-                            <button class="btn btn--num">-</button>
+                            <button class="btn btn--num">.</button>
                         </div>
                         <div class="c-body__btn--act">
                             <button class="btn btn--act btn--danger" onclick="cancelarOperacion()">Cancelar</button>
-                            <button class="btn btn--act btn--success" onclick="consultarSaldo()">Aceptar</button>
+                            <button class="btn btn--act btn--success" onclick="realizarRetiro()">Aceptar</button>
                             <button class="btn btn--act btn--warning" onclick="limpiarPantalla()">Borrar</button>
                         </div>
                     </div>
-                    <!-- Área derecha del cuerpo (podrías agregar tarjeta o billetes aquí si lo deseas) -->
-                    <div></div>
                 </div>
             </div>
         </section>
-
         <script>
+            let montoActual = '';
+            let ModoRetiro = false; //Verifica si el usuario esta realizando un retiro
+
             function consultarSaldo() {
                 fetch("http://localhost:8081/Efectivoapi/saldo")
                         .then(response => {
@@ -214,46 +214,96 @@
                         });
             }
 
-
             function retirarDinero() {
-                const monto = prompt("Ingrese el monto a retirar:");
-                const mensaje = document.getElementById("mensaje");
+                ModoRetiro = true;
+                montoActual = '';
+                document.getElementById("mensaje").textContent = "Ingrese el monto a retirar:";
+                document.getElementById("saldo-texto").textContent = "";
+                actualizarDisplayMonto();
+            }
 
-                if (monto === null || monto.trim() === "") {
-                    mensaje.textContent = "Operación cancelada.";
+            function actualizarDisplayMonto() {
+                document.getElementById("saldo-texto").textContent =
+                        montoActual ? `Monto: $${parseFloat(montoActual).toFixed(2)}` : "";
+            }
+
+            function manejarNumero(num) {
+                if (!ModoRetiro)
+                    return;
+
+                if (num === '-') {
+                    // Botón para borrar
+                    montoActual = montoActual.slice(0, -1);
+                } else if (num === '0' && montoActual === '') {
+                    // No permitir 0 como primer dígito
+                    return;
+                } else if (montoActual.length < 10) {
+                    // Limitar a 10 dígitos
+                    montoActual += num;
+                }
+
+                actualizarDisplayMonto();
+            }
+
+            function realizarRetiro() {
+                if (!ModoRetiro || !montoActual) {
+                    document.getElementById("mensaje").textContent = "Ingrese un monto válido";
                     return;
                 }
 
-                const cantidad = parseFloat(monto);
-
-                if (isNaN(cantidad) || cantidad <= 0) {
-                    mensaje.textContent = "Monto inválido.";
-                } else {
-                    consultarSaldo(); // Para refrescar el saldo antes de comparar
-                    setTimeout(() => {
-                        const saldoTexto = document.getElementById("saldo-texto").textContent;
-                        const match = saldoTexto.match(/[\d.]+/);
-                        const saldoActual = match ? parseFloat(match[0]) : 0;
-
-                        if (cantidad > saldoActual) {
-                            mensaje.textContent = "Saldo insuficiente.";
-                        } else {
-                            const nuevoSaldo = saldoActual - cantidad;
-                            document.getElementById("saldo-texto").textContent = `Saldo disponible: $${nuevoSaldo.toFixed(2)}`;
-                            mensaje.textContent = "Retiro exitoso.";
-                        }
-                    }, 500); // espera un poco para que el saldo se actualice primero
+                const monto = parseFloat(montoActual);
+                if (monto <= 0) {
+                    document.getElementById("mensaje").textContent = "Monto debe ser mayor a cero";
+                    return;
                 }
+
+                fetch(`http://localhost:8081/Efectivoapi/retiro?monto=${monto}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(error => {
+                                    throw new Error(error);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById("mensaje").textContent = "Retiro exitoso!";
+                            document.getElementById("saldo-texto").textContent = `Retiraste: $${monto.toFixed(2)}`;
+                            ModoRetiro = false;
+                            montoActual = '';
+                        })
+                        .catch(error => {
+                            document.getElementById("mensaje").textContent = error.message;
+                            document.getElementById("saldo-texto").textContent = "Error en retiro";
+                            console.error("Error:", error);
+                        });
             }
 
             function limpiarPantalla() {
                 document.getElementById("mensaje").textContent = "";
                 document.getElementById("saldo-texto").textContent = "";
+                ModoRetiro = false;
+                montoActual = '';
             }
 
             function cancelarOperacion() {
                 document.getElementById("mensaje").textContent = "Operación cancelada.";
+                document.getElementById("saldo-texto").textContent = "";
+                ModoRetiro = false;
+                montoActual = '';
             }
+
+            // Configurar eventos para los botones numéricos
+            document.querySelectorAll('.btn--num').forEach(button => {
+                button.addEventListener('click', () => {
+                    manejarNumero(button.textContent);//Ustilizo textContent para estraer el texto de los elementos
+                });
+            });
         </script>
     </body>
 </html>
