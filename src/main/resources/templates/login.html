@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Cajero Automático</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Iniciar Sesión</h1>
+    <input type="text" id="username" placeholder="Usuario"><br>
+    <input type="password" id="password" placeholder="Contraseña"><br>
+    <button onclick="login()">Entrar</button>
+
+    <script>
+        function login() {
+            const data = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            };
+
+            fetch("http://localhost:8081/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Usuario o contraseña incorrectos");
+                return response.json();
+            })
+            .then(usuario => {
+                // Guardar en localStorage o sessionStorage lo que necesites
+                localStorage.setItem("usuarioId", usuario.id);
+                localStorage.setItem("usuarioNombre", usuario.nombre);
+                localStorage.setItem("usuarioRol", usuario.rol.nombre);
+
+                alert("¡Bienvenido " + usuario.nombre + "!");
+
+                // Redirigir a la pantalla principal
+                window.location.href = "menu.html"; // o cualquier otra página
+            })
+            .catch(error => alert(error.message));
+        }
+    </script>
+</body>
+</html>
